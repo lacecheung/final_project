@@ -45,12 +45,37 @@ upeventbox = {"rect": pygame.Rect((windowwidth-10)/4 + 5, windowheight-99, (wind
 downeventbox = {"rect": pygame.Rect(((windowwidth-10)/4)*2 + 5, windowheight-99, (windowwidth-10)/4 - 1, 50), "color": black}
 righteventbox = {"rect": pygame.Rect(((windowwidth-10)/4)*3 + 5, windowheight-99, (windowwidth-10)/4 + 1, 50), "color": black}
 
-#show how much life the player has
-lifepoints = pygame.Rect(windowwidth - 203, 9, 197, 17)
+eventboxes = [lefteventbox, upeventbox, downeventbox, righteventbox]
+
 
 #end of the event area
+topeventline = windowheight - 99
 bottomeventline = windowheight - 47
 
+
+
+#setting up font
+def render_points(points):
+	textfont = pygame.font.SysFont(None, 25)
+	text = textfont.render("Points: " + str(points), True, white, black)
+	textrect = text.get_rect()
+	textrect.top = 9
+	textrect.left = 7
+
+	windowsurface.blit(text, textrect)
+
+
+#show how much life the player has. Color changes depending on life left (width of life bar)
+lifepoints = pygame.Rect(windowwidth - 201, 9, 195, 17)
+
+def lifepoints_color(lifepoints):
+	if lifepoints.width < 50:
+		color = red
+	elif lifepoints.width < 140:
+		color= yellow
+	else: color = green
+
+	return color  
 
 
 #redraw board each time so block trail does not show
@@ -77,16 +102,28 @@ def get_board():
 	pygame.draw.polygon(windowsurface, white, ((45, 610), (45, 617), (70, 617), (70, 630), (45, 630), (45, 637), (35, 623)))
 	pygame.draw.polygon(windowsurface, white, ((366, 610), (376, 623), (366, 637), (366, 630), (341, 630), (341, 617), (366, 617)))
 
-	#draw life bar
-	pygame.draw.rect(windowsurface, gray, (windowwidth - 205, 7, 200, 20), 2)
+	#draw life bar and life points
+	pygame.draw.rect(windowsurface, gray, (windowwidth - 203, 7, 198, 20), 2)
+	pygame.draw.rect(windowsurface, lifepoints_color(lifepoints), lifepoints)
+
+	#text box for player score
+	render_points(points)
 
 
-#generate random number: # of blocks to show per line
+#For chosen iteration, add that iteration to currentblocks list. Call get_blocks(), then add it as an entry to blockcombo dict
+def new_blocks(iteration, currentblocks, blockcombo):
+	if iteration%30 == 0:
+		choseniteration = iteration
+		currentblocks.append(choseniteration)
+		blockcombo[choseniteration] = get_blocks()
+
+	return currentblocks, blockcombo
+
+
+#generate # of blocks to generate per line, and which blocks to show
 def blocksperline():
 	return random.randint(0,4)
 
-
-#generate which blocks to generate per line
 def get_blocks():
 	listblocks = []
 	blocks = [leftblock, upblock, downblock, rightblock]
@@ -100,16 +137,48 @@ def get_blocks():
 	return listblocks
 
 
-# How often to generate new blocks
-def show_blocks():
-	return random.choice([True, False, False, False])
+def show_blocks(currentblocks, blockcombo, lifepoints, pointsflag):
+	for b in blockcombo[choseniteration]:
+		b["rect"].top += movespeed
 
+# If blocks cross the bottom event line, shrink height of block
+		if b["rect"].bottom >= bottomeventline:
+			b["rect"].height -= movespeed
+
+# blocks disappear when height is zero, and remove it from currentblocks list
+		if b["rect"].height <= 0: 
+			currentblocks.remove(choseniteration)
+
+			if pointsflag == False:
+				if lifepoints.width > 4:
+					lifepoints.width -= 5
+
+			elif pointsflag == True:
+				points =+ 1
+
+			break
+
+		pygame.draw.rect(windowsurface, b["color"], b["rect"])
+
+
+
+
+#Checks if rect is inside the event lines
+def is_overlap(blockcombo, topeventline, bottomeventline):
+	for b in blockcombo[choseniteration]:
+		if b["rect"].top > topeventline and b["rect"].bottom < bottomeventline:
+			return True
+
+
+#_________________________________________________________________________________________________
 
 #execute game
 
-blockcombo = {}
+blockcombo = {} # dictionary of choseniteration: set of blocks for that choseniteration
+currentblocks = [] # list of which choseniterations are currently active
 iteration = 0
-currentblocks = []
+points = 0 
+pointsflag = False
 
 
 while True:
@@ -121,33 +190,21 @@ while True:
 	# resets surface to black 
 	get_board()
 
-	if iteration%50 == 0:
-		currentblocks.append(iteration)
-		blockcombo[iteration] = get_blocks()
+	# choose when to show blocks, and what blocks to show
+	new_blocks(iteration, currentblocks, blockcombo)
 
-	# for every set of blocks currently showing
-	for iteration in currentblocks:
 
-		# for each block in that set of blocks, move the block downwards at movespeed
-		for b in blockcombo[iteration]:
-			b["rect"].top += movespeed
-		
-			# If blocks cross the bottom event line, shrink height of block
-			if b["rect"].bottom >= bottomeventline:
-				b["rect"].height -= movespeed
+	# render blocks, moving downwards. For 
 
-			# blocks disappear when height is zero, and remove it from currentblocks list
-			if b["rect"].height <= 0: 
-				currentblocks.remove(iteration)
+	for choseniteration in currentblocks:
+		show_blocks(currentblocks, blockcombo, lifepoints, pointsflag)
 
-				if lifepoints.width >= 0:
-					lifepoints.width -= 5
+		#if is_overlap(blockcombo, topeventline, bottomeventline):
+				#pseudo: if player clicked, pointsflag = True
 
-				break
+	
+	#pseudo: if life points <= 0, game ends. play again?
 
-			pygame.draw.rect(windowsurface, b["color"], b["rect"])
-
-	pygame.draw.rect(windowsurface, green, lifepoints)
 
 	iteration += 1
 
