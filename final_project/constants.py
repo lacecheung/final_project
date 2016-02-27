@@ -7,12 +7,12 @@ iterationspers = 50
 
 #the number of pixels the blocks move per iteration
 movespeed1 = 4
-movespeedincrease = 1
-iterations_between_speedincrease = 400
+movespeedincrease = 0.5
+iterations_between_speedincrease = 500
 
 #the number of pixels the blocks move per iteration
-iterations_between_blocks1 = 50
-iterations_between_blocks_decrement = 2
+iterations_between_blocks1 = 60
+iterations_between_blocks_decrement = 3
 min_iterations_between_blocks = 8
 iterations_between_blocks_decrement_change = 200
 
@@ -31,7 +31,7 @@ windowheight = 650
 
 #Set up window surface
 windowsurface = pygame.display.set_mode((windowwidth, windowheight), 0, 32)
-window_caption = pygame.display.set_caption("Keyboard Hero")
+window_caption = pygame.display.set_caption("Dance Dance Terminal")
 
 #font
 fontsize = 25
@@ -53,13 +53,13 @@ purple = (128, 0, 128)
 #objects
 # Life points remaining
 lifepoints = pygame.Rect(windowwidth - 201, 9, 195, 17)
-lifepoints_decrement = 5
+lifepoints_decrement = 3
 
 #game blocks
-leftblock = {"rect": pygame.Rect(15, 40, block_width, block_height), "color": green}
-upblock = {"rect": pygame.Rect(117, 40, block_width, block_height), "color": yellow}
-downblock = {"rect": pygame.Rect(219, 40, block_width, block_height), "color": blue}
-rightblock = {"rect": pygame.Rect(321, 40, block_width, block_height), "color": red}
+leftblock = {"rect": pygame.Rect(15, 40, block_width, block_height), "color": green, "type": "left"}
+upblock = {"rect": pygame.Rect(117, 40, block_width, block_height), "color": yellow, "type": "up"}
+downblock = {"rect": pygame.Rect(219, 40, block_width, block_height), "color": blue, "type": "down"}
+rightblock = {"rect": pygame.Rect(321, 40, block_width, block_height), "color": red, "type": "right"}
 
 
 #event areas
