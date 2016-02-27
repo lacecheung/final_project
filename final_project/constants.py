@@ -6,10 +6,16 @@ from pygame.locals import *
 iterationspers = 50
 
 #the number of pixels the blocks move per iteration
-movespeed = 4
+movespeed1 = 4
+movespeedincrease = 1
+iterations_between_speedincrease = 400
 
 #the number of pixels the blocks move per iteration
-iterations_between_blocks = 30
+iterations_between_blocks1 = 50
+iterations_between_blocks_decrement = 2
+min_iterations_between_blocks = 8
+iterations_between_blocks_decrement_change = 200
+
 
 
 #block parameters
@@ -45,8 +51,9 @@ purple = (128, 0, 128)
 
 
 #objects
-# Life points outline box
+# Life points remaining
 lifepoints = pygame.Rect(windowwidth - 201, 9, 195, 17)
+lifepoints_decrement = 5
 
 #game blocks
 leftblock = {"rect": pygame.Rect(15, 40, block_width, block_height), "color": green}

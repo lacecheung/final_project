@@ -50,15 +50,29 @@ def get_board():
 
 	#draw life bar and life points
 	pygame.draw.rect(windowsurface, gray, (windowwidth - 203, 7, 198, 20), 2)
+	
+def draw_remaining_life(lifepoints):
 	pygame.draw.rect(windowsurface, lifepoints_color(lifepoints), lifepoints)
+	
 
+
+class BlockClass(object):
+	def __init__(self, left, top, color):
+		self.left = left
+		self.top = top
+		self.color = color
+		self.width = block_width
+		self.height = block_height
+		self.givepoint =  False
 
 	
 
 
 #Chooses how many blocks to show, and which blocks to show
 def blocksperline():
-	return random.randint(0,4)
+	choicelist = [0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
+	return random.choice(choicelist)
+
 
 def get_blocks():
 	listblocks = []
@@ -74,17 +88,70 @@ def get_blocks():
 
 
 
-
-
-
-def draw_blocks(blockcombo, each_iteration):
-	for block in blockcombo[each_iteration]:
-		block["rect"].top += movespeed
-		#print "rect top: ", block["rect"].top
-
-		pygame.draw.rect(windowsurface, block["color"], block["rect"])
-
-
 def time_to_get_new_blocks(iteration):
-	if iteration%iterations_between_blocks == 0:
+	if iteration%iterations_between_blocks(iteration) == 0:
 		return True
+
+def assign_blocks(blocklist, iteration, currentblocks):
+
+	for index, block in enumerate(blocklist, 0):
+		blockid = str(iteration), str(index)
+		blockid = BlockClass(block["rect"].left, block["rect"].top, block["color"])
+		currentblocks.append(blockid)
+
+
+def movespeed(iteration):
+	global movespeed1
+
+	if iteration%iterations_between_speedincrease == 0 and iteration != 0:
+		
+		movespeed1 += movespeedincrease
+
+	return movespeed1
+
+
+def draw_blocks(currentblocks, iteration):
+	currentmovespeed = movespeed(iteration)
+
+	for blockid in currentblocks:
+		blockid.top += currentmovespeed
+
+		if (blockid.top + blockid.height) >= bottomeventline:
+			blockid.height -= currentmovespeed
+
+		pygame.draw.rect(windowsurface, blockid.color, (blockid.left, blockid.top, blockid.width, blockid.height))
+
+
+def completed_blocks(currentblocks):
+	blockstoremove = []
+
+	for blockid in currentblocks:
+		if blockid.height <= 0:
+			blockstoremove.append(blockid)
+
+	return blockstoremove
+
+
+def life_points_remaining(blockid):
+	if blockid.givepoint == False:
+		if lifepoints.width > lifepoints_decrement - 1:
+	 		lifepoints.width -= lifepoints_decrement
+
+
+def iterations_between_blocks(iteration):
+	global iterations_between_blocks1
+
+	if iteration%iterations_between_blocks_decrement_change == 0 and iteration != 0:
+		if iterations_between_blocks1 > min_iterations_between_blocks:
+			iterations_between_blocks1 -= iterations_between_blocks_decrement
+
+	print iteration, iterations_between_blocks1
+
+	return iterations_between_blocks1
+
+
+# player input
+leftarrowkey = False
+uparrowkeydown = False
+downarrowkey = False
+rightarrowkey = False
