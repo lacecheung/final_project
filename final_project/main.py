@@ -22,12 +22,18 @@ pressleft = False
 pressright = False
 
 
+pygame.mixer.music.load("Kalimba.mp3")
+pygame.mixer.music.play(-1, 0.0)
+musicPlaying = True
+
 #execute game loop
 while True:
 	for event in pygame.event.get():
 		if event.type == QUIT:
 			pygame.quit()
 			sys.exit()
+
+
 
 		if event.type == KEYDOWN:
 			if event.key == K_LEFT or event.key == ord("h"):
@@ -52,6 +58,8 @@ while True:
 
 
 
+
+
 #display board:
 	get_board()
 	show_points(points)
@@ -69,7 +77,7 @@ while True:
 		blockid.givepoint = is_points_earned(blockid, pressleft, pressright, pressup, pressdown)
 
 	for blockid in completed_blocks(currentblocks):
-		#print iteration, blockid.type, blockid.givepoint, lifepoints.width
+		print iteration, blockid.type, blockid.givepoint, lifepoints.width
 		life_points_remaining(blockid)
 		if blockid.givepoint == True:
 		 	points += 1
@@ -81,6 +89,7 @@ while True:
 	if game_over(lifepoints):
 		get_gameover_board()
 		show_points(points)
+		pygame.mixer.music.stop()
 
 #loop setup:
 	pygame.display.update()
