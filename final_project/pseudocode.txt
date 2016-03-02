@@ -1,0 +1,12 @@
+- Start screen: Take player input (eg. hit enter) to start game
+- Start music
+- Generate blocks randomly every x iteration
+	- Randomly choose # of blocks to generate
+	- Randomly select which blocks to generate for chosen number of blocks
+	- Block move speed increases over time, and blocks generated at shorter intervals
+- When blocks reach the "event area":
+	- If player presses correct key at the right time, award points
+	- Otherwise, decrease life points remaining
+- Game ends when player reaches zero life points; music stops
+	- Return player score, and top ten scores
+	- Ask player if they want to play again
