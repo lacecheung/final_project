@@ -4,13 +4,7 @@ from constants import *
 
 # Renders number of player points
 def show_points(points):
-	textfont = pygame.font.SysFont(None, fontsize)
-	text = textfont.render("Points: " + str(points), True, white, black)
-	textrect = text.get_rect()
-	textrect.top = 9
-	textrect.left = 7
-
-	windowsurface.blit(text, textrect)
+	render_text(25, "Points: " + str(points), white, black, windowwidth*.12, 17)
 
 
 #color of life points bar (red = low, yellow = mid, green = high)
@@ -25,7 +19,7 @@ def lifepoints_color(lifepoints):
 
 
 # draws board
-def get_board():
+def get_board(points, lifepoints):
 	#resets board
 	windowsurface.fill(black)
 
@@ -45,13 +39,22 @@ def get_board():
 	pygame.draw.line(windowsurface, gray, (4, windowheight-5), (windowwidth-5, windowheight-5), 2)
 
 	#draw arrows
-	pygame.draw.polygon(windowsurface, white, ((45, 610), (45, 617), (70, 617), (70, 630), (45, 630), (45, 637), (35, 623)))
-	pygame.draw.polygon(windowsurface, white, ((366, 610), (376, 623), (366, 637), (366, 630), (341, 630), (341, 617), (366, 617)))
+	#pygame.draw.polygon(windowsurface, white, ((45, 610), (45, 617), (70, 617), (70, 630), (45, 630), (45, 637), (35, 623)))
+	#pygame.draw.polygon(windowsurface, white, ((366, 610), (376, 623), (366, 637), (366, 630), (341, 630), (341, 617), (366, 617)))
 
-	#draw life bar and life points
-	pygame.draw.rect(windowsurface, gray, (windowwidth - 203, 7, 198, 20), 2)
+	#eventbox icon
+	render_text(30, "D", white, black, lefticonbox["rect"].centerx, lefticonbox["rect"].centery)
+	render_text(30, "F", white, black, upiconbox["rect"].centerx, upiconbox["rect"].centery)
+	render_text(30, "J", white, black, downiconbox["rect"].centerx, downiconbox["rect"].centery)
+	render_text(30, "K", white, black, righticonbox["rect"].centerx, righticonbox["rect"].centery)
+
+	show_points(points)
+
+	draw_remaining_life(lifepoints)
+
 	
 def draw_remaining_life(lifepoints):
+	pygame.draw.rect(windowsurface, gray, lifepoints_outline, 2)
 	pygame.draw.rect(windowsurface, lifepoints_color(lifepoints), lifepoints)
 	
 
@@ -65,6 +68,7 @@ class BlockClass(object):
 		self.height = block_height
 		self.givepoint =  False
 		self.type = type
+		self.bottom = self.top + self.height
 
 	
 
@@ -102,13 +106,12 @@ def assign_blocks(blocklist, iteration, currentblocks,):
 
 
 def movespeed(iteration):
-	global movespeed1
+	global MOVESPEED1
 
 	if iteration%iterations_between_speedincrease == 0 and iteration != 0:
-		
-		movespeed1 += movespeedincrease
+		MOVESPEED1 += movespeedincrease
 
-	return movespeed1
+	return MOVESPEED1
 
 
 def draw_blocks(currentblocks, iteration):
@@ -133,12 +136,6 @@ def completed_blocks(currentblocks):
 	return blockstoremove
 
 
-def life_points_remaining(blockid):
-	if blockid.givepoint == False:
-		if lifepoints.width >= lifepoints_decrement:
-	 		lifepoints.width -= lifepoints_decrement
-
-
 def iterations_between_blocks(iteration):
 	global iterations_between_blocks1
 
@@ -149,8 +146,8 @@ def iterations_between_blocks(iteration):
 	return iterations_between_blocks1
 
 def is_points_earned(blockid, pressleft, pressright, pressup, pressdown):
-
-	if blockid.top >= topeventline and blockid.height == 20:
+	if blockid.top >= topeventline and blockid.bottom <= bottomeventline:
+	#if blockid.top >= topeventline and blockid.height == 20:
 		if (blockid.type == "left" and pressleft == True) or (blockid.type == "right" and pressright == True) or (blockid.type == "up" and pressup == True) or (blockid.type == "down" and pressdown == True):
 			blockid.givepoint = True
 		else:
@@ -158,23 +155,88 @@ def is_points_earned(blockid, pressleft, pressright, pressup, pressdown):
 
 	return blockid.givepoint
 
+
 def game_over(lifepoints):
-	if lifepoints.width < lifepoints_decrement:
+	if lifepoints.width < lifepoints_outline.width * lifepoints_decrement_percent:
 		return True
 
 
+def get_gameover_board(points):
+	while True:
+		windowsurface.fill(black)
+		render_text(40, "Game Over!", white, black, windowsurface.get_rect().centerx, windowsurface.get_rect().centery)
+		show_points(points)
 
-def get_gameover_text():
-	textfont = pygame.font.SysFont(None, 50)
-	text = textfont.render("Game Over!", True, white, black)
+		pygame.display.update()
+
+		for event in pygame.event.get():
+			terminate_conditions(event)
+			if event.type == KEYDOWN:
+				# if event.key == ord("i"):
+				# 	instructions_screen()
+				if event.key == K_SPACE:
+					return
+
+def render_text(fontsize, text, textcolor, backgroundcolor, midrectx, midrecty):
+	textfont = pygame.font.SysFont(None, fontsize)
+	text = textfont.render(text, True, textcolor, backgroundcolor)
 	textrect = text.get_rect()
-	textrect.top = windowsurface.get_rect().centery
-	textrect.left = windowsurface.get_rect().centerx - 0.5* textrect.width
+	textrect.centery = midrecty
+	textrect.centerx = midrectx
 
 	windowsurface.blit(text, textrect)
 
-def get_gameover_board():
-	windowsurface.fill(black)
-	pygame.draw.rect(windowsurface, lifepoints_color(lifepoints), lifepoints)
-	pygame.draw.rect(windowsurface, gray, (windowwidth - 203, 7, 198, 20), 2)
-	get_gameover_text()
+
+
+def start_screen():
+	#print "entered start screen function"
+	while True:
+		#print "start screen loop"
+		windowsurface.fill(black)
+		render_text(40, "Keyboard Hero:", white, black, 0.5*windowwidth, 0.22*windowheight)
+		render_text(30, "Press space bar to play,", white, black, 0.5*windowwidth, 0.3*windowheight)
+		render_text(30, "i for game instructions,", white, black, 0.5*windowwidth, 0.35*windowheight)
+		render_text(30, "or ESC to exit", white, black, 0.5*windowwidth, 0.4*windowheight)
+
+		pygame.display.update()
+
+		for event in pygame.event.get():
+			terminate_conditions(event)
+			if event.type == KEYDOWN:
+				if event.key == ord("i"):
+					instructions_screen()
+				if event.key == K_SPACE:
+					return
+
+
+
+def instructions_screen():
+	while True:
+
+		windowsurface.fill(black)
+		render_text(25, "Instructions:", green, black, 0.5*windowwidth, 0.2*windowheight)
+		render_text(20, "Use arrow keys or letter keys (D, F, J, K) as controls", gray, black, 0.5*windowwidth, 0.3*windowheight)
+		render_text(20, "5 points per correct key", gray, black, 0.5*windowwidth, 0.35*windowheight)
+		render_text(20, "Double points for combos!", gray, black, 0.5*windowwidth, 0.4*windowheight)
+		render_text(20, "Negative points for hitting wrong key", gray, black, 0.5*windowwidth, 0.45*windowheight)
+
+		pygame.display.update()
+
+		for event in pygame.event.get():
+			terminate_conditions(event)
+			if event.type == KEYDOWN:
+				if event.key == K_SPACE:
+					return
+
+def terminate():
+	pygame.quit()
+	sys.exit()
+
+def terminate_conditions(event):
+	if event.type == QUIT:
+		terminate()
+	if event.type == KEYDOWN:
+		if event.key == K_ESCAPE:
+			terminate()
+
+		

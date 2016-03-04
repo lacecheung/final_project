@@ -3,18 +3,18 @@ from pygame.locals import *
 
 #game speed
 #iterations per second
-iterationspers = 50
+FPS = 40
 
 #the number of pixels the blocks move per iteration
-movespeed1 = 4
-movespeedincrease = 0.5
-iterations_between_speedincrease = 500
+MOVESPEED1 = 8
+movespeedincrease = 1
+iterations_between_speedincrease = 400
 
 #the number of pixels the blocks move per iteration
-iterations_between_blocks1 = 60
-iterations_between_blocks_decrement = 3
-min_iterations_between_blocks = 8
-iterations_between_blocks_decrement_change = 200
+iterations_between_blocks1 = 45
+iterations_between_blocks_decrement = 5
+min_iterations_between_blocks = 10
+iterations_between_blocks_decrement_change = 300
 
 
 
@@ -30,8 +30,9 @@ windowwidth = 416
 windowheight = 650
 
 #Set up window surface
-windowsurface = pygame.display.set_mode((windowwidth, windowheight), 0, 32)
-window_caption = pygame.display.set_caption("Dance Dance Terminal")
+#windowsurface = pygame.display.set_mode((windowwidth, windowheight), 0, 32)
+windowsurface = pygame.display.set_mode((windowwidth, windowheight), pygame.FULLSCREEN)
+window_caption = pygame.display.set_caption("Keyboard Hero")
 
 #font
 fontsize = 25
@@ -48,12 +49,15 @@ yellow = (225, 225, 0)
 gray = (128, 128, 128)
 yellowgray = (150, 150, 80)
 purple = (128, 0, 128)
+darkgray = (50,50,50)
 
 
 #objects
 # Life points remaining
 lifepoints = pygame.Rect(windowwidth - 201, 9, 195, 17)
-lifepoints_decrement = 3
+lifepoints_outline = pygame.Rect(windowwidth - 203, 7, 198, 20)
+#lifepoints = pygame.Rect(windowwidth - 201, 9, 10, 17)
+lifepoints_decrement_percent = 0.03
 
 #game blocks
 leftblock = {"rect": pygame.Rect(15, 40, block_width, block_height), "color": green, "type": "left"}
@@ -63,12 +67,19 @@ rightblock = {"rect": pygame.Rect(321, 40, block_width, block_height), "color": 
 
 
 #event areas
-lefteventbox = {"rect": pygame.Rect(5, windowheight-99, (windowwidth-10)/4 - 1, 50), "color": black}
-upeventbox = {"rect": pygame.Rect((windowwidth-10)/4 + 5, windowheight-99, (windowwidth-10)/4 - 1, 50), "color": black}
-downeventbox = {"rect": pygame.Rect(((windowwidth-10)/4)*2 + 5, windowheight-99, (windowwidth-10)/4 - 1, 50), "color": black}
-righteventbox = {"rect": pygame.Rect(((windowwidth-10)/4)*3 + 5, windowheight-99, (windowwidth-10)/4 + 1, 50), "color": black}
+lefteventbox = {"rect": pygame.Rect(5, windowheight-99, (windowwidth-10)/4 - 1, 50), "color": darkgray}
+upeventbox = {"rect": pygame.Rect((windowwidth-10)/4 + 5, windowheight-99, (windowwidth-10)/4 - 1, 50), "color": darkgray}
+downeventbox = {"rect": pygame.Rect(((windowwidth-10)/4)*2 + 5, windowheight-99, (windowwidth-10)/4 - 1, 50), "color": darkgray}
+righteventbox = {"rect": pygame.Rect(((windowwidth-10)/4)*3 + 5, windowheight-99, (windowwidth-10)/4 + 1, 50), "color": darkgray}
 
 eventboxes = [lefteventbox, upeventbox, downeventbox, righteventbox]
 
 topeventline = windowheight - 99
 bottomeventline = windowheight - 47
+
+lefticonbox = {"rect": pygame.Rect(5, windowheight-50, (windowwidth-10)/4 - 1, 50), "color": black}
+upiconbox = {"rect": pygame.Rect((windowwidth-10)/4 + 5, windowheight-50, (windowwidth-10)/4 - 1, 50), "color": black}
+downiconbox = {"rect": pygame.Rect(((windowwidth-10)/4)*2 + 5, windowheight-50, (windowwidth-10)/4 - 1, 50), "color": black}
+righticonbox = {"rect": pygame.Rect(((windowwidth-10)/4)*3 + 5, windowheight-50, (windowwidth-10)/4 + 1, 50), "color": black}
+
+conseq_blocks_for_combo = 10
