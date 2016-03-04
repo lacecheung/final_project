@@ -160,20 +160,45 @@ def game_over(lifepoints):
 	if lifepoints.width < lifepoints_outline.width * lifepoints_decrement_percent:
 		return True
 
+def sort_highscores():
+	with open("topscore.txt") as my_file:
+		scores = my_file.readlines()
+
+	score_in_int = []
+
+	for score in scores:
+		score_in_int.append(int(score))
+
+	sorted_score = sorted(score_in_int, reverse = True)
+
+	return sorted_score
+
 
 def get_gameover_board(points):
 	while True:
 		windowsurface.fill(black)
-		render_text(40, "Game Over!", white, black, windowsurface.get_rect().centerx, windowsurface.get_rect().centery)
+		render_text(40, "Game Over!", white, black, windowsurface.get_rect().centerx, windowheight*.2)
+		render_text(30, "High Scores:", white, black, windowsurface.get_rect().centerx, windowheight*.4)
 		show_points(points)
+
+		# highscore = get_highscores()
+		# sorted_scores = sorted(highscore, reverse = True)
+		sorted_highscores = sort_highscores()
+
+		if points in sorted_highscores[0:9]:
+			score_message = "you got a high score!"
+		else: score_message = "you did not get a high score"
+
+		render_text(30, score_message, white, black, windowsurface.get_rect().centerx, windowheight*.3)
+		for index, score in enumerate(sorted_highscores, 0):
+			if index < 10:
+				render_text(20, str(index+1) + ". " + str(sorted_highscores[index]).strip(), white, black, windowsurface.get_rect().centerx, windowheight*(index+1)/20 + windowheight*0.3)
 
 		pygame.display.update()
 
 		for event in pygame.event.get():
 			terminate_conditions(event)
 			if event.type == KEYDOWN:
-				# if event.key == ord("i"):
-				# 	instructions_screen()
 				if event.key == K_SPACE:
 					return
 
@@ -219,6 +244,7 @@ def instructions_screen():
 		render_text(20, "5 points per correct key", gray, black, 0.5*windowwidth, 0.35*windowheight)
 		render_text(20, "Double points for combos!", gray, black, 0.5*windowwidth, 0.4*windowheight)
 		render_text(20, "Negative points for hitting wrong key", gray, black, 0.5*windowwidth, 0.45*windowheight)
+		render_text(25, "Hit space bar to continue", green, black, 0.5*windowwidth, 0.7*windowheight)
 
 		pygame.display.update()
 

@@ -17,11 +17,9 @@ min_iterations_between_blocks = 10
 iterations_between_blocks_decrement_change = 300
 
 
-
 #block parameters
 block_width = 80
 block_height = 20
-
 
 
 #windowsurface
@@ -36,7 +34,6 @@ window_caption = pygame.display.set_caption("Keyboard Hero")
 
 #font
 fontsize = 25
-
 
 
 #colors

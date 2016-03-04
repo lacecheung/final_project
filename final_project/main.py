@@ -120,6 +120,9 @@ while True:
 
 		if game_over(lifepoints) == True:
 			pygame.mixer.music.stop()
+			my_file = open("topscore.txt", "a")
+			my_file.write(str(points) + "\n")
+			my_file.close()
 			get_gameover_board(points)
 			break
 		
