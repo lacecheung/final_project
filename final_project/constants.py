@@ -80,3 +80,9 @@ downiconbox = {"rect": pygame.Rect(((windowwidth-10)/4)*2 + 5, windowheight-50, 
 righticonbox = {"rect": pygame.Rect(((windowwidth-10)/4)*3 + 5, windowheight-50, (windowwidth-10)/4 + 1, 50), "color": black}
 
 conseq_blocks_for_combo = 10
+
+song1 = "Adele-Rolling_In_The_Deep.mp3"
+song2 = "Kalimba.mp3"
+song3 = "Weezer-Island_In_The_Sun.mp3"
+
+songs = [song1, song2, song3]

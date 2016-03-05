@@ -31,11 +31,11 @@ while True:
 	points = 0 #player points
 	conseq_blocks = 0 #number of consecutive blocks player hit successfully
 
-	lifepoints.width =  20 #lifepoints_outline.width - 2
+	lifepoints.width =  lifepoints_outline.width - 2
 	start_screen()
 
 	#print "main screen loop"
-	pygame.mixer.music.load("Kalimba.mp3")
+	pygame.mixer.music.load(random.choice(songs))
 	pygame.mixer.music.play(-1, 0.0)
 	musicPlaying = True
 

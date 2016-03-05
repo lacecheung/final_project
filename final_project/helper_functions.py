@@ -72,7 +72,6 @@ class BlockClass(object):
 
 	
 
-
 #Chooses how many blocks to show, and which blocks to show
 def blocksperline():
 	choicelist = [0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
@@ -98,7 +97,6 @@ def time_to_get_new_blocks(iteration):
 		return True
 
 def assign_blocks(blocklist, iteration, currentblocks,):
-
 	for index, block in enumerate(blocklist, 0):
 		blockid = str(iteration), str(index)
 		blockid = BlockClass(block["rect"].left, block["rect"].top, block["color"], block["type"])
@@ -110,6 +108,8 @@ def movespeed(iteration):
 
 	if iteration%iterations_between_speedincrease == 0 and iteration != 0:
 		MOVESPEED1 += movespeedincrease
+
+	print iteration, MOVESPEED1
 
 	return MOVESPEED1
 
@@ -145,6 +145,7 @@ def iterations_between_blocks(iteration):
 
 	return iterations_between_blocks1
 
+
 def is_points_earned(blockid, pressleft, pressright, pressup, pressdown):
 	if blockid.top >= topeventline and blockid.bottom <= bottomeventline:
 	#if blockid.top >= topeventline and blockid.height == 20:
@@ -160,6 +161,7 @@ def game_over(lifepoints):
 	if lifepoints.width < lifepoints_outline.width * lifepoints_decrement_percent:
 		return True
 
+
 def sort_highscores():
 	with open("topscore.txt") as my_file:
 		scores = my_file.readlines()
@@ -174,26 +176,26 @@ def sort_highscores():
 	return sorted_score
 
 
-def get_gameover_board(points):
+def display_gameover_score_message(points):
+	sorted_highscores = sort_highscores()
+	if points in sorted_highscores[0:9]:
+		score_message = "You got a high score!"
+	else: score_message = "You did not get a high score"
+
+	render_text(30, score_message, white, black, windowsurface.get_rect().centerx, windowheight*.3)
+
+
+def show_highscore_board(points):
+	sorted_highscores = sort_highscores()
+	windowsurface.fill(black)
+	show_points(points)
+	render_text(40, "High scores:", white, black, windowsurface.get_rect().centerx, windowheight*.2)
+
 	while True:
-		windowsurface.fill(black)
-		render_text(40, "Game Over!", white, black, windowsurface.get_rect().centerx, windowheight*.2)
-		render_text(30, "High Scores:", white, black, windowsurface.get_rect().centerx, windowheight*.4)
-		show_points(points)
-
-		# highscore = get_highscores()
-		# sorted_scores = sorted(highscore, reverse = True)
-		sorted_highscores = sort_highscores()
-
-		if points in sorted_highscores[0:9]:
-			score_message = "you got a high score!"
-		else: score_message = "you did not get a high score"
-
-		render_text(30, score_message, white, black, windowsurface.get_rect().centerx, windowheight*.3)
 		for index, score in enumerate(sorted_highscores, 0):
 			if index < 10:
-				render_text(20, str(index+1) + ". " + str(sorted_highscores[index]).strip(), white, black, windowsurface.get_rect().centerx, windowheight*(index+1)/20 + windowheight*0.3)
-
+				render_text(30, str(index+1) + ". " + str(sorted_highscores[index]).strip(), white, black, windowsurface.get_rect().centerx, windowheight*(index+1)/20 + windowheight*0.3)
+		
 		pygame.display.update()
 
 		for event in pygame.event.get():
@@ -201,6 +203,28 @@ def get_gameover_board(points):
 			if event.type == KEYDOWN:
 				if event.key == K_SPACE:
 					return
+
+
+def get_gameover_board(points):
+	while True:
+		windowsurface.fill(black)
+		render_text(40, "Game Over!", white, black, windowsurface.get_rect().centerx, windowheight*.2)
+		render_text(30, "To see high scores: press 's'", white, black, windowsurface.get_rect().centerx, windowheight*.5)
+		render_text(30, "To continue: press space bar", white, black, windowsurface.get_rect().centerx, windowheight*.55)
+		render_text(30, "To quit: press ESC", white, black, windowsurface.get_rect().centerx, windowheight*.6)
+		show_points(points)
+		display_gameover_score_message(points)
+
+		pygame.display.update()
+
+		for event in pygame.event.get():
+			terminate_conditions(event)
+			if event.type == KEYDOWN:
+				if event.key == ord("s"):
+					show_highscore_board(points)
+				if event.key == K_SPACE:
+					return
+
 
 def render_text(fontsize, text, textcolor, backgroundcolor, midrectx, midrecty):
 	textfont = pygame.font.SysFont(None, fontsize)
@@ -210,7 +234,6 @@ def render_text(fontsize, text, textcolor, backgroundcolor, midrectx, midrecty):
 	textrect.centerx = midrectx
 
 	windowsurface.blit(text, textrect)
-
 
 
 def start_screen():
@@ -254,9 +277,11 @@ def instructions_screen():
 				if event.key == K_SPACE:
 					return
 
+
 def terminate():
 	pygame.quit()
 	sys.exit()
+
 
 def terminate_conditions(event):
 	if event.type == QUIT:
