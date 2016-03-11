@@ -11,7 +11,7 @@ mainclock = pygame.time.Clock()
 
 
 #counters
-combo_iteration = - conseq_blocks_for_combo - FPS
+combo_iteration = - conseq_blocks_for_combo - FPS #
 
 #default value for player keys (when players press key, values = True, otherwise False)
 pressdown = False
@@ -31,19 +31,19 @@ while True:
 	points = 0 #player points
 	conseq_blocks = 0 #number of consecutive blocks player hit successfully
 
-	lifepoints.width =  lifepoints_outline.width - 2
-	start_screen()
+	lifepoints.width =  lifepoints_outline.width - 2 #start life points (Lifepoints outline - line thickness)
+	start_screen() #welcome screen (while loop). 
 
 	#print "main screen loop"
-	pygame.mixer.music.load(random.choice(songs))
-	pygame.mixer.music.play(-1, 0.0)
+	pygame.mixer.music.load(random.choice(songs)) #random song selection
+	pygame.mixer.music.play(-1, 0.0) #play while program is running
 	musicPlaying = True
 
 
 	while True:
 
-		for event in pygame.event.get():
-			terminate_conditions(event)
+		for event in pygame.event.get(): 
+			terminate_conditions(event) #ESC conditions
 
 		# sets up player input (allows player to use arrows or letters on the keyboard)
 			if event.type == KEYDOWN:
@@ -67,7 +67,7 @@ while True:
 					pressup = False
 
 
-		#display board:
+		#display game board:
 		get_board(points, lifepoints)
 			
 		# visually show which key is being pressed by highlighting the associated event block
@@ -90,7 +90,7 @@ while True:
 		#render blocks, moving downwards by movespeed every iteration
 		draw_blocks(currentblocks, iteration)
 
-		#did player hit the correct key at the right time. changes blockid.givepoint to True
+		#did player hit the correct key at the right time. changes blockid.givepoint to True and color to white
 		for blockid in currentblocks:
 			blockid.givepoint = is_points_earned(blockid, pressleft, pressright, pressup, pressdown)
 			if blockid.givepoint == True:
@@ -111,22 +111,21 @@ while True:
 				combo_iteration = iteration
 				points += 5
 
-			currentblocks.remove(blockid)
+			currentblocks.remove(blockid) #remove blocks that have reached the bottom of the screen from the currentblocks list
 
 			# display message if player successfully gets X consecutive blocks
-		if iteration < (combo_iteration + FPS) and conseq_blocks > 10:
+		if iteration < (combo_iteration + FPS) and conseq_blocks > 10: #display # of iterations that is equivalent to one second. dont display when conseq_block streak is broken
 			render_text(30, "Combo! " + str(conseq_blocks) +  " blocks!", white, black, 0.5 * windowwidth, 0.5 * windowheight)
 
-
+		#if game over, stop music and record player score to topscore.txt. display game over board (while loop).
 		if game_over(lifepoints) == True:
 			pygame.mixer.music.stop()
 			my_file = open("topscore.txt", "a")
 			my_file.write(str(points) + "\n")
 			my_file.close()
 			get_gameover_board(points)
-			break
+			break #break game loop; restart from first while loop
 		
-
 
 		pygame.display.update()
 	 	iteration += 1

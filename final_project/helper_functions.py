@@ -2,6 +2,20 @@ import pygame, sys, time, random
 from pygame.locals import *
 from constants import *
 
+#block class 
+class BlockClass(object): 
+	def __init__(self, left, top, color, type):
+		self.left = left
+		self.top = top
+		self.color = color
+		self.width = block_width
+		self.height = block_height
+		self.givepoint =  False
+		self.type = type
+		self.bottom = self.top + self.height
+
+
+
 # Renders number of player points
 def show_points(points):
 	render_text(25, "Points: " + str(points), white, black, windowwidth*.12, 17)
@@ -59,19 +73,6 @@ def draw_remaining_life(lifepoints):
 	
 
 
-class BlockClass(object):
-	def __init__(self, left, top, color, type):
-		self.left = left
-		self.top = top
-		self.color = color
-		self.width = block_width
-		self.height = block_height
-		self.givepoint =  False
-		self.type = type
-		self.bottom = self.top + self.height
-
-	
-
 #Chooses how many blocks to show, and which blocks to show
 def blocksperline():
 	choicelist = [0, 1, 1, 1, 1, 2, 2, 2, 3, 3, 4]
@@ -96,22 +97,26 @@ def time_to_get_new_blocks(iteration):
 	if iteration%iterations_between_blocks(iteration) == 0:
 		return True
 
+
 def assign_blocks(blocklist, iteration, currentblocks,):
 	for index, block in enumerate(blocklist, 0):
 		blockid = str(iteration), str(index)
 		blockid = BlockClass(block["rect"].left, block["rect"].top, block["color"], block["type"])
 		currentblocks.append(blockid)
 
-
 def movespeed(iteration):
-	global MOVESPEED1
+	block_speed = MOVESPEED1 + int(iteration/iterations_between_speedincrease) * movespeedincrease
+	return block_speed
 
-	if iteration%iterations_between_speedincrease == 0 and iteration != 0:
-		MOVESPEED1 += movespeedincrease
+# def movespeed(iteration):
+# 	global MOVESPEED1
 
-	print iteration, MOVESPEED1
+# 	if iteration%iterations_between_speedincrease == 0 and iteration != 0:
+# 		MOVESPEED1 += movespeedincrease
 
-	return MOVESPEED1
+# 	print iteration, MOVESPEED1
+
+# 	return MOVESPEED1
 
 
 def draw_blocks(currentblocks, iteration):
@@ -142,7 +147,7 @@ def iterations_between_blocks(iteration):
 	if iteration%iterations_between_blocks_decrement_change == 0 and iteration != 0:
 		if iterations_between_blocks1 > min_iterations_between_blocks:
 			iterations_between_blocks1 -= iterations_between_blocks_decrement
-
+	print iteration, iterations_between_blocks1
 	return iterations_between_blocks1
 
 
